@@ -2,11 +2,13 @@ import {useContext, useEffect} from "react";
 import {StyleSheet, View} from "react-native";
 import {globalStyles} from "../constants/styles";
 import IconButton from "../components/UI/IconButton";
-import Button from "../components/UI/Button";
 import {ExpensesContext} from "../context/ExpensesContext";
+import ExpenseForm from "../components/ManageExpense/ExpenseForm";
 
 export default function ManageExpenses({navigation, route}) {
-  const {addExpense, updateExpense, deleteExpense} = useContext(ExpensesContext)
+  const {expenses, deleteExpense} = useContext(ExpensesContext)
+
+  const selectedExpense = expenses.find((e) => e.id === route.params?.expenseId);
 
   useEffect(() => {
     navigation.setOptions({
@@ -19,22 +21,12 @@ export default function ManageExpenses({navigation, route}) {
     navigation.goBack();
   }
 
-  function confirmHandler() {
-    if (!!route.params?.expenseId) {
-      updateExpense(route.params?.expenseId, {description: 'crocs', amount: 20, date: new Date()})
-    } else addExpense({description: 'crocs', amount: 20, date: new Date()})
-    navigation.goBack();
-  }
-
   function cancelHandler() {
     navigation.goBack();
   }
 
   return <View style={styles.container}>
-    <View style={styles.buttonsContainer}>
-      <Button style={styles.button} mode='flat' onPress={cancelHandler}>Cancel</Button>
-      <Button style={styles.button} onPress={confirmHandler}>{!!route.params?.expenseId ? "Update" : "Add"}</Button>
-    </View>
+    <ExpenseForm id={route.params?.expenseId} onCancel={cancelHandler} expense={selectedExpense}/>
     <View style={styles.deleteContainer}>
       {!!route.params?.expenseId ?
         <IconButton icon='trash' size={32} color={globalStyles.colors.error500} onPress={deleteExpenseHandler}/> : null}
@@ -55,13 +47,4 @@ const styles = StyleSheet.create({
     borderTopWidth: 2,
     alignItems: "center"
   },
-  buttonsContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center"
-  },
-  button: {
-    minWidth: 120,
-    marginHorizontal: 8
-  }
 })

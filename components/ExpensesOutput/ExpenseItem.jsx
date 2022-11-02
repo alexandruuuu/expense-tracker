@@ -40,7 +40,7 @@ export default function ExpenseItem({amount, date, description, id}) {
             color: globalStyles.colors.primary50,
             fontSize: 13,
             marginBottom: 5
-          }}>{date.toLocaleDateString()}</Text>
+          }}>{date.toISOString().slice(0, 10)}</Text>
         </View>
         <View style={{
           backgroundColor: "white",
