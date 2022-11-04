@@ -1,13 +1,10 @@
 import {StyleSheet, Text, View} from "react-native";
 import Input from "./Input";
-import {useContext, useState} from "react";
+import {useState} from "react";
 import Button from "../UI/Button";
-import {ExpensesContext} from "../../context/ExpensesContext";
-import {useNavigation} from "@react-navigation/native";
 import {globalStyles} from "../../constants/styles";
 
-export default function ExpenseForm({id, onCancel, expense}) {
-  const {addExpense, updateExpense} = useContext(ExpensesContext)
+export default function ExpenseForm({id, onCancel, expense, onSubmit}) {
   const [inputValues, setInputValues] = useState({
     amount: {
       value: expense?.amount.toString() || '',
@@ -22,8 +19,6 @@ export default function ExpenseForm({id, onCancel, expense}) {
       isValid: true
     }
   });
-
-  const navigation = useNavigation();
 
   function inputChangedHandler(inputIdentifier, entered) {
     setInputValues((prev) => ({...prev, [inputIdentifier]: {value: entered, isValid: true}}));
@@ -41,23 +36,13 @@ export default function ExpenseForm({id, onCancel, expense}) {
       }))
       return;
     }
-    confirmHandler();
-  }
-
-  function confirmHandler() {
-    if (id) {
-      updateExpense(id, {
-        description: inputValues?.description.value,
-        amount: +inputValues?.amount.value,
-        date: new Date(inputValues?.date.value)
-      })
-    } else addExpense({
+    onSubmit({
       description: inputValues?.description.value,
       amount: +inputValues?.amount.value,
       date: new Date(inputValues?.date.value)
-    })
-    navigation.goBack();
+    });
   }
+
 
   return <View style={styles.form}>
     <Text style={styles.titleStyle}>Your Expense</Text>
